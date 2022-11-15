@@ -59,6 +59,12 @@ userSchema.methods.generateAuthToken = async function () {
 	return token;
 };
 
+// get username
+userSchema.methods.getUserName = async function () {
+	const user = this;
+	return user.name;
+};
+
 // Hash password before saving into the database
 userSchema.pre('save', async function (next) {
 	const user = this;

@@ -28,6 +28,8 @@ router.post('/users/login', async (req, res) => {
 		);
 
 		const token = await user.generateAuthToken();
+		const userName = await user.getUserName();
+		console.log(userName);
 		res.send({ user, token });
 	} catch (error) {
 		res.status(400).send({ msg: error.message });
