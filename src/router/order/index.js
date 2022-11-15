@@ -33,16 +33,17 @@ router.post('/order/checkout', Auth, async (req, res) => {
 	try {
 		const owner = req.user._id;
 		const payload = {
-			card_number: '4556052704172643',
-			cvv: '899',
-			expiry_month: '01',
-			expiry_year: '23',
+			card_number: '5061082021831292127',
+			cvv: '567',
+			expiry_month: '06',
+			expiry_year: '25',
 			currency: 'NGN',
-			amount: '7500',
-			email: 'developers@flutterwavego.com',
-			fullname: 'Flutterwave Developers',
+			amount,
+			email,
+			fullname: 'Samuel Ijiyemi',
 			tx_ref: 'MC-3243e',
-			redirect_url: 'https://your-awesome.app/payment-redirect',
+			redirect_url: 'https://google.com',
+			enckey,
 		};
 
 		// find cart and user
@@ -58,7 +59,7 @@ router.post('/order/checkout', Auth, async (req, res) => {
 				payload2.authorization = {
 					mode: 'pin',
 					fields: ['pin'],
-					pin: 3310,
+					pin: 1954,
 				};
 
 				const reCallCharge = await flw.Charge.card(payload2);
