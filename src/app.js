@@ -1,9 +1,11 @@
 /** @format */
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const userRoute = require('./router/user');
 const itemRoute = require('./router/item');
 const cartRoute = require('./router/cart');
+const orderRoute = require('./router/order');
 const connectDB = require('./db/mongoose');
 
 const ApiError = require('./db/ErrorHandler');
@@ -20,6 +22,14 @@ const port = process.env.PORT;
 app.use(userRoute);
 app.use(itemRoute);
 app.use(cartRoute);
+app.use(orderRoute);
+
+const publicDirectory = path.join(__dirname, '../public');
+app.use(express.static(publicDirectory));
+
+app.get('/', (req, res) => {
+	res.sendFile('index.html');
+});
 
 // send back 404 error to any invalid request
 app.use((req, res, next) => {

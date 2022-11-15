@@ -3,6 +3,7 @@
 const express = require('express');
 const Cart = require('../../models/cart');
 const Item = require('../../models/item');
+const User = require('../../models/user');
 const Auth = require('../../middleware/Auth');
 
 const router = express.Router();
@@ -61,12 +62,12 @@ router.post('/cart', Auth, async (req, res) => {
 					return acc + curr.quantity * curr.price;
 				}, 0);
 				await cart.save();
-				res.status(200).send(cart);
+				res.status(200).send({ cart });
 			}
 		} else {
 			// no cart exist create one
 			const newCart = await Cart.create({
-				owner,
+				username,
 				items: [{ itemId, name, quantity, price }],
 				bill: quantity * price,
 			});
@@ -76,6 +77,33 @@ router.post('/cart', Auth, async (req, res) => {
 	} catch (error) {
 		console.log(error);
 		res.status(500).send('something went wrong!');
+	}
+});
+
+router.delete('/cart', Auth, async (req, res) => {
+	const owner = req.user._id;
+	const itemId = req.query.itemId;
+	try {
+		let cart = await Cart.findOne({ owner });
+		const itemIndex = cart.items.findIndex((item) => item.itemId == itemId);
+		if (itemIndex > -1) {
+			let item = cart.items[itemIndex];
+			cart.bill -= item.quantity * item.price;
+			if (cart.bill < 0) {
+				cart.bill = 0;
+			}
+			cart.items.splice(itemIndex, 1);
+			cart.bill = cart.items.reduce((acc, curr) => {
+				return acc + curr.quantity * curr.price;
+			}, 0);
+			cart = await cart.save();
+			res.status(200).send(cart);
+		} else {
+			res.status(404).send('item not found');
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(400).send();
 	}
 });
 
